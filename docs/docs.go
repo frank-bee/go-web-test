@@ -61,6 +61,17 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "Person Data",
+                        "name": "persondata",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "ok",
@@ -71,9 +82,9 @@ var doc = `{
                 }
             }
         },
-        "/users/{some_id}": {
+        "/users/{email}": {
             "get": {
-                "description": "this to get a user by msisdn",
+                "description": "this to get a user by email",
                 "consumes": [
                     "application/json"
                 ],
@@ -85,7 +96,7 @@ var doc = `{
                     {
                         "type": "string",
                         "description": "Some ID",
-                        "name": "some_id",
+                        "name": "email",
                         "in": "path",
                         "required": true
                     }
@@ -100,7 +111,7 @@ var doc = `{
                 }
             },
             "delete": {
-                "description": "this to delete a user by msisdn",
+                "description": "this to delete a user by email",
                 "consumes": [
                     "application/json"
                 ],
@@ -112,7 +123,7 @@ var doc = `{
                     {
                         "type": "string",
                         "description": "Some ID",
-                        "name": "some_id",
+                        "name": "email",
                         "in": "path",
                         "required": true
                     }
@@ -127,7 +138,7 @@ var doc = `{
                 }
             },
             "patch": {
-                "description": "this to update a user by msisdn",
+                "description": "this to update a user by email",
                 "consumes": [
                     "application/json"
                 ],
@@ -139,7 +150,7 @@ var doc = `{
                     {
                         "type": "string",
                         "description": "Some ID",
-                        "name": "some_id",
+                        "name": "email",
                         "in": "path",
                         "required": true
                     }

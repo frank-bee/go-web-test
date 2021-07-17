@@ -15,12 +15,16 @@ import (
 	_ "github.com/frank-bee/go-web-test/docs"
 )
 
+type payload struct {
+	Message string `json:"message" xml:"message" msgpack:"message" yaml:"Message" url:"message" form:"message"`
+}
+
 type User struct {
 	ID         bson.ObjectId `bson:"_id,omitempty"`
 	Firstname  string        `json:"firstname"`
 	Lastname   string        `json:"lastname"`
 	Age        int           `json:"age"`
-	Msisdn     string        `json:"msisdn"`
+	Email      string        `json:"email"`
 	InsertedAt time.Time     `json:"inserted_at" bson:"inserted_at"`
 	LastUpdate time.Time     `json:"last_update" bson:"last_update"`
 }
@@ -57,7 +61,7 @@ func main() {
 
 	// Index
 	index := mgo.Index{
-		Key:        []string{"msisdn"},
+		Key:        []string{"email"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
@@ -82,10 +86,10 @@ func main() {
 	})
 
 	app.Handle("GET", "/users", getUsers)
-	app.Handle("GET", "/users/{some_id} [get]", getUser)
+	app.Handle("GET", "/users/{email}", getUser)
 	app.Handle("POST", "/users", createUser)
-	app.Handle("PATCH", "/users/{some_id} [get]", updateUser)
-	app.Handle("DELETE", "/users/{some_id} [get]", deleteUser)
+	app.Handle("PATCH", "/users/{email}", updateUser)
+	app.Handle("DELETE", "/users/{email}", deleteUser)
 
 	// Listens and serves incoming http requests
 	// on http://localhost:8080.
@@ -116,20 +120,20 @@ func getUsers(ctx iris.Context) {
 }
 
 // @Summary Get user
-// @Description this to get a user by msisdn
+// @Description this to get a user by email
 // @Accept  json
 // @Produce json
-// @Param   some_id     path    string     true        "Some ID"
+// @Param   email     path    string     true        "Some ID"
 // @Success 200 {string} string	"ok"
-// @Router /users/{some_id} [get]
+// @Router /users/{email} [get]
 func getUser(ctx iris.Context) {
-	msisdn := ctx.Params().Get("msisdn")
-	fmt.Println(msisdn)
-	if msisdn == "" {
-		ctx.JSON(iris.Map{"response": "please pass a valid msisdn"})
+	email := ctx.Params().Get("email")
+	fmt.Println(email)
+	if email == "" {
+		ctx.JSON(iris.Map{"response": "please pass a valid email"})
 	}
 	result := User{}
-	err := c.Find(bson.M{"msisdn": msisdn}).One(&result)
+	err := c.Find(bson.M{"email": email}).One(&result)
 	if err != nil {
 		ctx.JSON(iris.Map{"response": err.Error()})
 	}
@@ -140,10 +144,12 @@ func getUser(ctx iris.Context) {
 // @Description this to create a user
 // @Accept  json
 // @Produce  json
+// @Param   persondata     body    string     true        "Person Data"
 // @Success 200 {string} string	"ok"
 // @Router /users [post]
 func createUser(ctx iris.Context) {
 	params := &User{}
+
 	err := ctx.ReadJSON(params)
 	if err != nil {
 		ctx.JSON(iris.Map{"response": err.Error()})
@@ -155,7 +161,7 @@ func createUser(ctx iris.Context) {
 		} else {
 			fmt.Println("Successfully inserted into database")
 			result := User{}
-			err = c.Find(bson.M{"msisdn": params.Msisdn}).One(&result)
+			err = c.Find(bson.M{"email": params.Email}).One(&result)
 			if err != nil {
 				ctx.JSON(iris.Map{"response": err.Error()})
 			}
@@ -166,17 +172,17 @@ func createUser(ctx iris.Context) {
 }
 
 // @Summary Update user
-// @Description this to update a user by msisdn
+// @Description this to update a user by email
 // @Accept  json
 // @Produce json
-// @Param   some_id     path    string     true        "Some ID"
+// @Param   email     path    string     true        "Some ID"
 // @Success 200 {string} string	"ok"
-// @Router /users/{some_id} [patch]
+// @Router /users/{email} [patch]
 func updateUser(ctx iris.Context) {
-	msisdn := ctx.Params().Get("msisdn")
-	fmt.Println(msisdn)
-	if msisdn == "" {
-		ctx.JSON(iris.Map{"response": "please pass a valid msisdn"})
+	email := ctx.Params().Get("email")
+	fmt.Println(email)
+	if email == "" {
+		ctx.JSON(iris.Map{"response": "please pass a valid email"})
 	}
 	params := &User{}
 	err := ctx.ReadJSON(params)
@@ -184,13 +190,13 @@ func updateUser(ctx iris.Context) {
 		ctx.JSON(iris.Map{"response": err.Error()})
 	} else {
 		params.InsertedAt = time.Now()
-		query := bson.M{"msisdn": msisdn}
+		query := bson.M{"email": email}
 		err = c.Update(query, params)
 		if err != nil {
 			ctx.JSON(iris.Map{"response": err.Error()})
 		} else {
 			result := User{}
-			err = c.Find(bson.M{"msisdn": params.Msisdn}).One(&result)
+			err = c.Find(bson.M{"email": params.Email}).One(&result)
 			if err != nil {
 				ctx.JSON(iris.Map{"response": err.Error()})
 			}
@@ -201,17 +207,17 @@ func updateUser(ctx iris.Context) {
 }
 
 // @Summary Delete user
-// @Description this to delete a user by msisdn
+// @Description this to delete a user by email
 // @Accept  json
 // @Produce  json
-// @Param   some_id     path    string     true        "Some ID"
+// @Param   email     path    string     true        "Some ID"
 // @Success 200 {string} string	"ok"
-// @Router /users/{some_id} [delete]
+// @Router /users/{email} [delete]
 func deleteUser(ctx iris.Context) {
-	msisdn := ctx.Params().Get("msisdn")
-	fmt.Println(msisdn)
-	if msisdn == "" {
-		ctx.JSON(iris.Map{"response": "please pass a valid msisdn"})
+	email := ctx.Params().Get("email")
+	fmt.Println(email)
+	if email == "" {
+		ctx.JSON(iris.Map{"response": "please pass a valid email"})
 	}
 	params := &User{}
 	err := ctx.ReadJSON(params)
@@ -219,7 +225,7 @@ func deleteUser(ctx iris.Context) {
 		ctx.JSON(iris.Map{"response": err.Error()})
 	} else {
 		params.InsertedAt = time.Now()
-		query := bson.M{"msisdn": msisdn}
+		query := bson.M{"email": email}
 		err = c.Remove(query)
 		if err != nil {
 			ctx.JSON(iris.Map{"response": err.Error()})

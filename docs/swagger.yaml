@@ -30,6 +30,13 @@ paths:
       consumes:
       - application/json
       description: this to create a user
+      parameters:
+      - description: Person Data
+        in: body
+        name: persondata
+        required: true
+        schema:
+          type: string
       produces:
       - application/json
       responses:
@@ -38,15 +45,15 @@ paths:
           schema:
             type: string
       summary: Create user
-  /users/{some_id}:
+  /users/{email}:
     delete:
       consumes:
       - application/json
-      description: this to delete a user by msisdn
+      description: this to delete a user by email
       parameters:
       - description: Some ID
         in: path
-        name: some_id
+        name: email
         required: true
         type: string
       produces:
@@ -60,11 +67,11 @@ paths:
     get:
       consumes:
       - application/json
-      description: this to get a user by msisdn
+      description: this to get a user by email
       parameters:
       - description: Some ID
         in: path
-        name: some_id
+        name: email
         required: true
         type: string
       produces:
@@ -78,11 +85,11 @@ paths:
     patch:
       consumes:
       - application/json
-      description: this to update a user by msisdn
+      description: this to update a user by email
       parameters:
       - description: Some ID
         in: path
-        name: some_id
+        name: email
         required: true
         type: string
       produces:
